@@ -34,6 +34,7 @@ SERVICE_NAME = "rtlbe_rtl_play"
 
 DEVICE_ID_URL = "https://e.m6web.fr/info?customer={customerName}".format(customerName=CUSTOMER_NAME)
 
+
 # Url to get channel's categories
 # e.g. Info, Divertissement, Séries, ...
 # We get an id by category
@@ -104,7 +105,7 @@ URL_LICENCE_KEY = ('https://lic.drmtoday.com/license-proxy-widevine/cenc/'
 
 URL_LIVE_JSON = ('https://lfvp-api.dpgmedia.net/%s/live').format(customerName=CUSTOMER_NAME)
 
-GET_JWT = "https://front-auth.6cloud.fr/v2/platforms/m6group_web/getJwt"
+GET_JWT = "https://lfvp-api.dpgmedia.net/rtlplay/tokens/"
 
 LIVE_CHANNEL = {
     "rtl_tvi": "tvi",
@@ -697,8 +698,7 @@ def get_live_url(plugin, item_id, **kwargs):
     is_ok, uid, uid_signature, signature_timestamp = accounts_login(plugin, api_key)
     if not is_ok:
         return False
-    xbmc.log('avant le license token',xbmc.LOGINFO)
-    licence_token = get_token(uid, uid_signature, signature_timestamp, item_id, get_video_id(item_id))
+
     device_id = get_device_id()
     xbmc.log('avant le JWT token',xbmc.LOGINFO)       
     token = get_jwt(device_id, uid, signature_timestamp, uid_signature)
@@ -718,7 +718,8 @@ def get_live_url(plugin, item_id, **kwargs):
     final_video_url = get_final_video_url(plugin, video_assets)
     if final_video_url is None:
         return False
-
+    xbmc.log('avant le license token',xbmc.LOGINFO)
+    licence_token = get_token(uid, uid_signature, signature_timestamp, item_id, get_video_id(item_id))
     return resolver_proxy.get_stream_with_quality(plugin,
                                                   video_url=final_video_url,
                                                   manifest_type="mpd",
@@ -777,6 +778,7 @@ def get_jwt(device_id, uid, signature_timestamp, uid_signature):
     }
 
     json_parser = urlquick.get(GET_JWT, headers=headers, max_age=-1).json()
+    xbmc.log(json_parser.text,xbmc.LOGINFO)
     return json_parser['token']
 
 
@@ -826,3 +828,4 @@ def accounts_login(plugin, api_key):
         return False, None, None, None
 
     return True, json_parser["UID"], json_parser["UIDSignature"], json_parser["signatureTimestamp"]
+
