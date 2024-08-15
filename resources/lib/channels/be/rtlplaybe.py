@@ -21,6 +21,7 @@ import urlquick
 from codequick import Listitem, Resolver, Route, Script
 # noinspection PyUnresolvedReferences
 from kodi_six import xbmcgui
+import xbmc
 
 from resources.lib import download, resolver_proxy, web_utils
 from resources.lib.addon_utils import get_item_media_path, Quality
@@ -101,8 +102,7 @@ URL_LICENCE_KEY = ('https://lic.drmtoday.com/license-proxy-widevine/cenc/'
                    '&Host=lic.drmtoday.com&x-dt-auth-token=%s&x-customer-name=rtlbe|R{SSM}|JBlicense')
 # Referer, Token
 
-URL_LIVE_JSON = ('https://layout.6cloud.fr/front/v1/{customerName}/'
-                 'm6group_web/main/token-web-4/live/%s/layout?nbPages=2').format(customerName=CUSTOMER_NAME)
+URL_LIVE_JSON = ('https://lfvp-api.dpgmedia.net/%s/live').format(customerName=CUSTOMER_NAME)
 
 GET_JWT = "https://front-auth.6cloud.fr/v2/platforms/m6group_web/getJwt"
 
@@ -739,11 +739,13 @@ def get_video_assets(plugin, token, item_id):
     }
 
     json_parser = urlquick.get(URL_LIVE_JSON % LIVE_CHANNEL[item_id], headers=headers_live, max_age=-1).json()
+    xbmc.log(json_parser.text, xbmc.LOGINFO)       
     if 'error' in json_parser:
         message = json_parser['message']
         xbmcgui.Dialog().ok('Info', message)
         plugin.log('get_video_assets ' + message)
         return False, None
+    
     return True, json_parser['blocks'][0]['content']['items'][0]['itemContent']['video']['assets']
 
 
