@@ -697,10 +697,10 @@ def get_live_url(plugin, item_id, **kwargs):
     is_ok, uid, uid_signature, signature_timestamp = accounts_login(plugin, api_key)
     if not is_ok:
         return False
-    xbmc.log('avant le license token',XBMC.LOGINFO)
+    xbmc.log('avant le license token',xbmc.LOGINFO)
     licence_token = get_token(uid, uid_signature, signature_timestamp, item_id, get_video_id(item_id))
     device_id = get_device_id()
-    xbmc.log('avant le JWT token',XBMC.LOGINFO)       
+    xbmc.log('avant le JWT token',xbmc.LOGINFO)       
     token = get_jwt(device_id, uid, signature_timestamp, uid_signature)
     is_ok, video_assets = get_video_assets(plugin, token, item_id)
     if not is_ok:
