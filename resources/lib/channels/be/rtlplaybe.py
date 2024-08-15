@@ -777,7 +777,13 @@ def get_jwt(device_id, uid, signature_timestamp, uid_signature):
         "referrer": ("%s/" % PUBLIC_SITE)
     }
 
-    json_parser = urlquick.get(GET_JWT, headers=headers, max_age=-1).json()
+    json_parser = urlquick.post(GET_JWT, json={
+            'device': {
+                'id': device_id,
+                'name': 'RTL Play Addon on Kodi',
+            },
+            'idToken': uid,
+        },headers=headers, max_age=-1).json()
     xbmc.log(json_parser.text,xbmc.LOGINFO)
     return json_parser['token']
 
